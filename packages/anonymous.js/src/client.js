@@ -278,18 +278,21 @@ class Client {
                         web3.eth.accounts.signTransaction(tx, throwaway.privateKey).then((signed) => {
                             web3.eth.sendSignedTransaction(signed.rawTransaction)
                                 .on('transactionHash', (hash) => {
+                                    if(fundBeforeTransfer)
+                                        console.log("Deposit submitted (txHash = \"" + hash + "\").");
                                     that._transfers.add(hash);
                                     console.log("Transfer submitted (txHash = \"" + hash + "\").");
                                 })
                                 .on('receipt', (receipt) => {
                                     account._state = account._simulate(); // have to freshly call it
                                     account._state.nonceUsed = true;
-                                    account._state.pending -= value;
-                                    console.log("Transfer of " + value + " was successful. Balance now " + (account._state.available + account._state.pending) + ".");
+                                    if(!fundBeforeTransfer) account._state.pending -= value;
+                                    console.log("Deposit and transfer of " + value + " was successful.");
                                     resolve(receipt);
                                 })
                                 .on('error', (error) => {
-                                    console.log("Transfer failed: " + error);
+                                    console.log(fundBeforeTransfer ? "Deposit and transfer failed: " + error
+                                                                   : "Transfer failed: " + error);
                                     reject(error);
                                 });
                         });
