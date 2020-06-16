@@ -131,6 +131,10 @@ contract ZSC {
     }
 
     function burn(Utils.G1Point memory y, uint256 bTransfer, Utils.G1Point memory u, bytes memory proof) public {
+        burnTo(y, bTransfer, u, proof, msg.sender);
+    }
+
+    function burnTo(Utils.G1Point memory y, uint256 bTransfer, Utils.G1Point memory u, bytes memory proof, address recipient) public {
         bytes32 yHash = keccak256(abi.encode(y));
         require(registered(yHash), "Account not yet registered.");
         rollOver(yHash);
@@ -148,6 +152,6 @@ contract ZSC {
         nonceSet.push(uHash);
 
         require(burnverifier.verifyBurn(scratch[0], scratch[1], y, lastGlobalUpdate, u, msg.sender, proof), "Burn proof verification failed!");
-        require(coin.transfer(msg.sender, bTransfer), "This shouldn't fail... Something went severely wrong.");
+        require(coin.transfer(recipient, bTransfer), "This shouldn't fail... Something went severely wrong.");
     }
 }
