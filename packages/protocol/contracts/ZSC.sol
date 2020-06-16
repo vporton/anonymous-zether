@@ -130,6 +130,13 @@ contract ZSC {
         emit TransferOccurred(y);
     }
 
+    // TODO: Suboptimal impl., unstable API.
+    function fundAndTransfer(Utils.G1Point memory y1, uint256 bTransfer1,
+                             Utils.G1Point[] memory C2, Utils.G1Point memory D2, Utils.G1Point[] memory y2, Utils.G1Point memory u2, bytes memory proof2) public {
+        fund(y1, bTransfer1);
+        transfer(C2, D2, y2, u2, proof2);
+    }
+
     function burn(Utils.G1Point memory y, uint256 bTransfer, Utils.G1Point memory u, bytes memory proof) public {
         burnTo(y, bTransfer, u, proof, msg.sender);
     }
