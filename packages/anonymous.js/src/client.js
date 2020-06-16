@@ -190,7 +190,7 @@ class Client {
             // the 20-millisecond buffer is designed to give the callback time to fire (see below).
         };
 
-        this.transfer = (name, value, decoys) => {
+        this.transfer = (name, value, decoys, fundBeforeTransfer) => {
             if (this.account.keypair === undefined)
                 throw "Client's account is not yet registered!";
             decoys = decoys ? decoys : [];
@@ -271,8 +271,10 @@ class Client {
                         var proof = service.proveTransfer(CLn, CRn, C, D, y, state.lastRollOver, account.keypair['x'], r, value, state.available - value, index);
                         var u = bn128.serialize(utils.u(state.lastRollOver, account.keypair['x']));
                         var throwaway = web3.eth.accounts.create();
-                        var encoded = zsc.methods.transfer(C, D, y, u, proof).encodeABI();
-                        var tx = { 'to': zsc._address, 'data': encoded, 'gas': 54700000, 'nonce': 0 };
+                        var encoded = fundBeforeTransfer
+                            ? zsc.methods.fundAndTransfer(account.keypair['y'], value, C, D, y, u, proof).encodeABI()
+                            : zsc.methods.transfer(C, D, y, u, proof).encodeABI();
+                        var tx = { 'from': home, 'to': zsc._address, 'data': encoded, 'gas': 60100000, 'nonce': 0 };
                         web3.eth.accounts.signTransaction(tx, throwaway.privateKey).then((signed) => {
                             web3.eth.sendSignedTransaction(signed.rawTransaction)
                                 .on('transactionHash', (hash) => {
