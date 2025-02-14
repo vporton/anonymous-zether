@@ -5,8 +5,8 @@
   "main": "./lib",
   "dependencies": {
     "bn.js": "^5.1.1",
-    "elliptic": "^6.5.1",
-    "web3": "^1.2.4"
+    "elliptic": "^6.6.1",
+    "web3": "^4.0.1"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
